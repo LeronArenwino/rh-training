@@ -2,14 +2,19 @@ package org.acme.model;
 
 import java.util.List;
 
-import io.quarkus.mongodb.panache.PanacheMongoEntity;
-import io.quarkus.mongodb.panache.common.MongoEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-@MongoEntity(collection = "filiales")
-public class Filial extends PanacheMongoEntity {
+@Entity
+@Table(name = "filiales")
+public class Filial extends PanacheEntity {
 
     @NotEmpty(message = "El campo 'name' no debe estar vacío")
     @Pattern(regexp = "^[A-Za-z0-9\\s]+$", message = "El campo name debe contener solo letras y números")
@@ -31,12 +36,11 @@ public class Filial extends PanacheMongoEntity {
     @Pattern(regexp = "^[A-Za-z0-9\\s]+$", message = "El campo rnc debe contener solo letras y números")
     public String rnc;
 
-    @NotEmpty(message = "El campo 'status' no debe estar vacío")
-    @Pattern(regexp = "^[A-Za-z0-9\\s]+$", message = "El campo status debe contener solo letras y números")
+    @NotNull(message = "El campo 'status' no debe ser nulo")
     public Boolean status;
 
     @NotEmpty(message = "El campo 'programs' no debe estar vacío")
-    @Pattern(regexp = "^[A-Za-z0-9\\s]+$", message = "El campo programs debe contener solo letras y números")
-    @Valid
+     @Valid
+    @OneToMany(mappedBy = "filial", cascade = CascadeType.ALL)
     public List<Programs> programs;
 }

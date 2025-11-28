@@ -1,9 +1,15 @@
 package org.acme.model;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 
-public class Programs {
+@Entity
+@Table(name = "programs")
+public class Programs extends PanacheEntity {
 
     @NotEmpty(message = "El campo 'code' no debe estar vacío")
     @Pattern(regexp = "^[A-Z0-9]{3}$", message = "El campo code debe ser de 3 caracteres")
@@ -24,4 +30,7 @@ public class Programs {
     @NotEmpty(message = "El campo 'transactionChannel' no debe estar vacío")
     @Pattern(regexp = "^[A-Z]{3}$", message = "El campo transactionChannel debe ser de 3 caracteres")
     public String transactionChannel;
+
+    @ManyToOne
+    public Filial filial;
 }
