@@ -1,11 +1,11 @@
-package org.acme.resources;
+package co.com.training.resources;
 
 import java.util.List;
 
-import org.acme.contracts.FilialsContract;
-import org.acme.model.Filial;
 import org.jboss.logging.Logger;
 
+import co.com.training.contracts.FilialsContract;
+import co.com.training.model.Filial;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;

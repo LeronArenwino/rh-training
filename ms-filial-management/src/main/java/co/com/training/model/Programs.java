@@ -1,4 +1,4 @@
-package org.acme.model;
+package co.com.training.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Entity;

@@ -1,4 +1,4 @@
-package org.acme.model;
+package co.com.training.model;
 
 import java.util.List;
 
