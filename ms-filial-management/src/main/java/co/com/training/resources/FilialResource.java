@@ -6,21 +6,26 @@ import org.jboss.logging.Logger;
 
 import co.com.training.contracts.FilialsContract;
 import co.com.training.model.Filial;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 
+@ApplicationScoped
 public class FilialResource implements FilialsContract {
 
     private final Logger logger = Logger.getLogger(FilialResource.class);
 
     @Transactional
     public Filial createFilial(Filial filial) {
+        logger.info("Recibiendo petición para crear filial: " + filial.name);
         
         if (filial.id == null) {
             filial.persist();
+            logger.info("Filial creada con ID: " + filial.id);
         } else {
             Filial.getEntityManager().merge(filial);
+            logger.info("Filial actualizada con ID: " + filial.id);
         }
         return filial;
     }
