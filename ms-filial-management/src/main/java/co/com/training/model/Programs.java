@@ -12,7 +12,7 @@ import jakarta.validation.constraints.Pattern;
 public class Programs extends PanacheEntity {
 
     @NotEmpty(message = "El campo 'code' no debe estar vacío")
-    @Pattern(regexp = "^[A-Z0-9]{3}$", message = "El campo code debe ser de 3 caracteres")
+    @Pattern(regexp = "^[A-Z0-9]+$", message = "El campo code debe contener solo letras mayúsculas y números")
     public String code;
 
     public Boolean active;
@@ -24,11 +24,11 @@ public class Programs extends PanacheEntity {
     public String description;
 
     @NotEmpty(message = "El campo 'paymentType' no debe estar vacío")
-    @Pattern(regexp = "^[A-Z]{3}$", message = "El campo paymentType debe ser de 3 caracteres")
+    @Pattern(regexp = "^[A-Z_]+$", message = "El campo paymentType debe contener solo letras mayúsculas y guiones bajos")
     public String paymentType;
 
     @NotEmpty(message = "El campo 'transactionChannel' no debe estar vacío")
-    @Pattern(regexp = "^[A-Z]{3}$", message = "El campo transactionChannel debe ser de 3 caracteres")
+    @Pattern(regexp = "^[A-Z_]+$", message = "El campo transactionChannel debe contener solo letras mayúsculas y guiones bajos")
     public String transactionChannel;
 
     @ManyToOne
