@@ -3,6 +3,7 @@ package co.com.training.contracts;
 import java.util.List;
 
 import co.com.training.model.Filial;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -17,7 +18,7 @@ import jakarta.ws.rs.core.MediaType;
 public interface FilialsContract {
 
     @POST
-    public Filial createFilial(Filial filial);
+    public Filial createFilial(@Valid Filial filial);
 
     @GET
     @Path("/{id}")
