@@ -88,6 +88,9 @@
                 <artifactId>quarkus-maven-plugin</artifactId>
                 <version>${quarkus.platform.version}</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <jvmArgs>-Dnet.bytebuddy.experimental=true</jvmArgs>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -109,10 +112,11 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire-plugin.version}</version>
                 <configuration>
-                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED -Dnet.bytebuddy.experimental=true</argLine>
                     <systemPropertyVariables>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
+                        <net.bytebuddy.experimental>true</net.bytebuddy.experimental>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -128,11 +132,12 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED -Dnet.bytebuddy.experimental=true</argLine>
                     <systemPropertyVariables>
                         <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
+                        <net.bytebuddy.experimental>true</net.bytebuddy.experimental>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
