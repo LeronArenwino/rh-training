@@ -1,0 +1,12 @@
+-- This file allow to write SQL commands that will be emitted in test and dev.
+insert into Client (id, address, credit_card, document, document_type, email, name, phone) values(1, 'Calle 23 # 14 - 05', '14453555445', '1073520103', 'CEDULA', 'prueba@mail.com', 'Juan Perez', '+573124220025');
+insert into Client (id, address, credit_card, document, document_type, email, name, phone) values(2, 'Calle 45 # 10 - 02', '541234567890', '1000000002', 'CEDULA', 'maria.gomez@mail.com', 'Maria Gomez', '+573001111111');
+insert into Client (id, address, credit_card, document, document_type, email, name, phone) values(3, 'Carrera 10 # 5 - 30', '549876543210', '1000000003', 'CEDULA', 'carlos.ruiz@mail.com', 'Carlos Ruiz', '+573002222222');
+insert into Client (id, address, credit_card, document, document_type, email, name, phone) values(4, 'Avenida 9 # 12 - 01', '553322110099', '1000000004', 'CEDULA', 'ana.torres@mail.com', 'Ana Torres', '+573003333333');
+insert into Client (id, address, credit_card, document, document_type, email, name, phone) values(5, 'Transversal 7 # 8 - 20', '560001122334', '1000000005', 'CEDULA', 'luis.martinez@mail.com', 'Luis Martinez', '+573004444444');
+insert into Client (id, address, credit_card, document, document_type, email, name, phone) values(6, 'Calle 30 # 2 - 15', '577889900112', '1000000006', 'CEDULA', 'sofia.lopez@mail.com', 'Sofia Lopez', '+573005555555');
+insert into Client (id, address, credit_card, document, document_type, email, name, phone) values(7, 'Avenida 1 # 20 - 05', '588776655443', '1000000007', 'CEDULA', 'diego.sanchez@mail.com', 'Diego Sanchez', '+573006666666');
+insert into Client (id, address, credit_card, document, document_type, email, name, phone) values(8, 'Calle 14 # 7 - 11', '599001234567', '1000000008', 'CEDULA', 'laura.morales@mail.com', 'Laura Morales', '+573007777777');
+insert into Client (id, address, credit_card, document, document_type, email, name, phone) values(9, 'Carrera 22 # 18 - 09', '512345678901', '1000000009', 'CEDULA', 'miguel.alfonso@mail.com', 'Miguel Alfonso', '+573008888888');
+insert into Client (id, address, credit_card, document, document_type, email, name, phone) values(10, 'Diagonal 5 # 3 - 02', '523456789012', '1000000010', 'CEDULA', 'valentina.perez@mail.com', 'Valentina Perez', '+573009999999');
+-- alter sequence myentity_seq restart with 4;
