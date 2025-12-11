@@ -1,4 +1,4 @@
-package co.com.training.model;
+package co.com.training.model.request;
 
 public record EmailAttached(
     String attachedId,
