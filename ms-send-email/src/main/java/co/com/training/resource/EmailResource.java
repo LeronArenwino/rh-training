@@ -30,7 +30,12 @@ public class EmailResource {
 
     @POST
     @Path("/resend")
-    public Uni<DataResponse> resendEmail(@RequestBody @Valid EmailRequest emailRequest) {
+    public Uni<DataResponse> resendEmail(@RequestBody(required = true) @Valid EmailRequest emailRequest) {
+        // Validation will be handled by @Valid annotation and ExceptionMapper
+        // If emailRequest is null, it will be caught by NullPointerExceptionMapper
+        if (emailRequest == null) {
+            throw new IllegalArgumentException("Request body cannot be null");
+        }
         LOG.info("Resending email to: " + emailRequest.recipient());
         return emailService.sendEmail(emailRequest);
     }
