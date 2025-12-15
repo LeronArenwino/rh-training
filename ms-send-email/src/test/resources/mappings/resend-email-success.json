@@ -1,0 +1,26 @@
+{
+    "request": {
+      "method": "POST",
+      "url": "/MailService.asmx",
+      "headers": {
+        "SOAPAction": {
+          "matches": ".*ResendEmail.*"
+        },
+        "Content-Type": {
+          "contains": "text/xml"
+        }
+      },
+      "bodyPatterns": [
+        {
+          "matches": ".*<emailId>.*</emailId>.*"
+        }
+      ]
+    },
+    "response": {
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml; charset=utf-8"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body><ResendEmailResponse xmlns=\"http://training.com/services/\"><ResendEmailResult><success>true</success><message>Email sent successfully</message></ResendEmailResult></ResendEmailResponse></soap:Body></soap:Envelope>"
+    }
+  }
