@@ -1,8 +1,5 @@
 package co.com.training.exception;
 
-import co.com.training.model.response.DataResponse;
-import co.com.training.model.response.Header;
-import co.com.training.model.response.Body;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import jakarta.ws.rs.core.Response;
