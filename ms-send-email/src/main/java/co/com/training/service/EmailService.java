@@ -42,8 +42,8 @@ public interface EmailService {
      * @return A {@link Uni} that emits a {@link DataResponse} containing the
      *         result of the operation. The response includes:
      *         <ul>
-     *           <li>Success case: code 200, status "REENVIADO"</li>
-     *           <li>Business error: code from SOAP service, status "ERROR"</li>
+     *           <li>Success case: code 200, status "Sent"</li>
+     *           <li>Business error: code 400/409 from SOAP service, status "ERROR"</li>
      *           <li>Technical error: code 500, status "ERROR"</li>
      *         </ul>
      */
