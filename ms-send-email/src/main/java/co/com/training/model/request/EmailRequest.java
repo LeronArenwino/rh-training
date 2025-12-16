@@ -7,6 +7,26 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Represents the request payload for resending an email.
+ * 
+ * <p>This record contains all the necessary information to resend an email through
+ * the SOAP service, including the email identifier, recipient, subject, message,
+ * and optional attachments.</p>
+ * 
+ * <p>All fields except {@code emailAttacheds} are required and validated:
+ * <ul>
+ *   <li>{@code emailId} - Must not be null</li>
+ *   <li>{@code recipient} - Must not be null and must be a valid email address</li>
+ *   <li>{@code subject} - Must not be null</li>
+ *   <li>{@code message} - Must not be null</li>
+ *   <li>{@code emailAttacheds} - Optional list of attachments</li>
+ * </ul>
+ * </p>
+ * 
+ * @author Francisco Dueñas
+ * @since 1.0.0
+ */
 public record EmailRequest( 
     /*
      * Email identifier

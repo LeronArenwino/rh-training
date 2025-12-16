@@ -15,15 +15,56 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
+/**
+ * Implementation of the {@link EmailService} interface.
+ * 
+ * <p>This service implementation handles the business logic for resending emails
+ * through a SOAP service. It is responsible for:
+ * <ul>
+ *   <li>Converting internal request models to SOAP service models</li>
+ *   <li>Invoking the SOAP service using the injected CXF client</li>
+ *   <li>Mapping SOAP responses to internal response models</li>
+ *   <li>Handling both business and technical errors</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>The service uses Apache CXF for SOAP communication, which is injected
+ * via the {@link io.quarkiverse.cxf.annotation.CXFClient} annotation.</p>
+ * 
+ * <p>All operations are executed asynchronously using Mutiny's {@link Uni}
+ * to support reactive programming patterns.</p>
+ * 
+ * @author Francisco Dueñas
+ * @since 1.0.0
+ */
 @ApplicationScoped
 public class EmailServiceImpl implements EmailService{
 
     private static final Logger LOG = Logger.getLogger(EmailServiceImpl.class);
 
+    /**
+     * Injected SOAP client for the mail service.
+     * 
+     * <p>This client is configured via application.properties and is used to
+     * invoke the SOAP service operations defined in the WSDL.</p>
+     */
     @Inject
     @CXFClient("mailService")
     MailServiceSoap mailServiceSoap;
 
+    /**
+     * {@inheritDoc}
+     * 
+     * <p>This implementation:
+     * <ol>
+     *   <li>Converts {@link EmailRequest} to {@link ResendEmailRequest}</li>
+     *   <li>Maps attachments if present</li>
+     *   <li>Invokes the SOAP service</li>
+     *   <li>Maps the SOAP response to {@link DataResponse}</li>
+     *   <li>Handles exceptions and returns appropriate error responses</li>
+     * </ol>
+     * </p>
+     */
     @Override
     public Uni<DataResponse> sendEmail(EmailRequest emailRequest) {
         return Uni.createFrom().item(() -> {
@@ -63,6 +104,19 @@ public class EmailServiceImpl implements EmailService{
         });
     }
 
+    /**
+     * Maps a SOAP service response to the internal DataResponse model.
+     * 
+     * <p>This method handles both successful and business error responses from
+     * the SOAP service. It extracts the relevant information and constructs
+     * the appropriate {@link DataResponse}.</p>
+     * 
+     * @param emailRequest The original email request for reference
+     * @param soapResult The result from the SOAP service
+     * @return A DataResponse with appropriate status code and message based on
+     *         the SOAP result. Returns code 200 for success, or the error code
+     *         from the SOAP service for business errors.
+     */
     private DataResponse mapSoapResponseToDataResponse(EmailRequest emailRequest, ResendEmailResult soapResult) {
         if (soapResult.isSuccess()) {
             // Successful response
@@ -89,6 +143,19 @@ public class EmailServiceImpl implements EmailService{
         }
     }
 
+    /**
+     * Creates an error response for technical failures.
+     * 
+     * <p>This method is used when a technical error occurs (e.g., network issues,
+     * SOAP service unavailable, etc.) and creates a standardized error response
+     * with the provided error details.</p>
+     * 
+     * @param emailRequest The original email request for reference
+     * @param code The HTTP status code (typically 500 for technical errors)
+     * @param message The error message for the header
+     * @param detail The detailed error description for the body
+     * @return A DataResponse with error status and details
+     */
     private DataResponse createErrorResponse(EmailRequest emailRequest, int code, String message, String detail) {
         Header header = new Header(code, message);
         Body body = new Body(
