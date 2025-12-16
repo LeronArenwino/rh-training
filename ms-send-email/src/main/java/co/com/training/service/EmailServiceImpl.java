@@ -35,7 +35,7 @@ import org.jboss.logging.Logger;
  * to support reactive programming patterns.</p>
  * 
  * @author Francisco Dueñas
- * @since 1.0.0
+ * @since 1.0.1
  */
 @ApplicationScoped
 public class EmailServiceImpl implements EmailService{
@@ -97,9 +97,15 @@ public class EmailServiceImpl implements EmailService{
                 
             } catch (Exception e) {
                 LOG.error("Error calling SOAP service", e);
-                // Handle technical errors (500)
+                // Handle technical errors - timeout, connection failure, 500 from provider
+                String errorDetail = "Technical error consuming the WSDL";
+                if (e.getMessage() != null) {
+                    errorDetail += ": " + e.getMessage();
+                } else {
+                    errorDetail += " (timeout, connection failure, 500 from provider)";
+                }
                 return createErrorResponse(emailRequest, 500, "Internal Server Error", 
-                    "Technical failure: " + e.getMessage());
+                    errorDetail);
             }
         });
     }
@@ -125,19 +131,23 @@ public class EmailServiceImpl implements EmailService{
                 emailRequest.emailId(),
                 emailRequest.recipient(),
                 "REENVIADO",
-                soapResult.getMessage() != null ? soapResult.getMessage() : "Email sent successfully to the SOAP service"
+                soapResult.getMessage() != null ? soapResult.getMessage() : "Email resent successfully to the SOAP service"
             );
             return new DataResponse(header, body);
         } else {
             // Business error
             int statusCode = soapResult.getErrorCode() != null ? 
                 Integer.parseInt(soapResult.getErrorCode()) : 400;
+            // Ensure business error codes are 400 or 409
+            if (statusCode != 400 && statusCode != 409) {
+                statusCode = 400; // Default to 400 for business errors
+            }
             Header header = new Header(statusCode, "Error");
             Body body = new Body(
                 emailRequest.emailId(),
                 emailRequest.recipient(),
                 "ERROR",
-                soapResult.getMessage() != null ? soapResult.getMessage() : "Business error occurred"
+                soapResult.getMessage() != null ? soapResult.getMessage() : "Business error received from the SOAP service"
             );
             return new DataResponse(header, body);
         }
