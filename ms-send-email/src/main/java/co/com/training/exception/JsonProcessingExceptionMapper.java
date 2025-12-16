@@ -2,6 +2,8 @@ package co.com.training.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+
+import co.com.training.model.response.ErrorResponse;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
@@ -22,6 +24,6 @@ public class JsonProcessingExceptionMapper implements ExceptionMapper<com.faster
             errorMessage = "Invalid data format in request body";
         }
         
-        return ErrorResponseHelper.createValidationErrorResponse(errorMessage);
+        return ErrorResponse.createValidationErrorResponse(errorMessage);
     }
 }
