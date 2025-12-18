@@ -1,4 +1,5 @@
 {
+    "priority": 1,
     "request": {
       "method": "POST",
       "url": "/MailService.asmx",
@@ -12,7 +13,7 @@
       },
       "bodyPatterns": [
         {
-          "matches": ".*<emailId>.*</emailId>.*"
+          "matches": ".*<emailId>1</emailId>.*"
         }
       ]
     },
