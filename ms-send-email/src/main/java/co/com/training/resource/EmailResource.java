@@ -138,13 +138,10 @@ public class EmailResource {
         }
         
         // Map business error codes (400, 409) and technical errors (500)
-        if (codeResponse == 200) {
-            return Response.Status.OK.getStatusCode();
-        } else if (codeResponse == 400 || codeResponse == 409) {
-            return codeResponse; // Return as-is for business errors
-        } else {
-            // Default to 500 for technical errors or unknown codes
-            return Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
-        }
+        return switch (codeResponse) {
+          case 200 -> Response.Status.OK.getStatusCode();
+          case 400, 409 -> codeResponse;
+          default -> Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+        };
     }
 }
