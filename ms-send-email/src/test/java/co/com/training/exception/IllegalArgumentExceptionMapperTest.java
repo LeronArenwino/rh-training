@@ -3,6 +3,7 @@ package co.com.training.exception;
 import co.com.training.model.response.Body;
 import co.com.training.model.response.DataResponse;
 import co.com.training.model.response.Header;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Francisco Dueñas
  * @since 1.0.0
  */
+@QuarkusTest
 @DisplayName("IllegalArgumentExceptionMapper Tests")
 class IllegalArgumentExceptionMapperTest {
 
