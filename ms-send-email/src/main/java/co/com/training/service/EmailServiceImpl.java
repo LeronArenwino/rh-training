@@ -17,7 +17,7 @@ import org.jboss.logging.Logger;
 
 /**
  * Implementation of the {@link EmailService} interface.
- * 
+ *
  * <p>This service implementation handles the business logic for resending emails
  * through a SOAP service. It is responsible for:
  * <ul>
@@ -27,13 +27,13 @@ import org.jboss.logging.Logger;
  *   <li>Handling both business and technical errors</li>
  * </ul>
  * </p>
- * 
+ *
  * <p>The service uses Apache CXF for SOAP communication, which is injected
  * via the {@link io.quarkiverse.cxf.annotation.CXFClient} annotation.</p>
- * 
+ *
  * <p>All operations are executed asynchronously using Mutiny's {@link Uni}
  * to support reactive programming patterns.</p>
- * 
+ *
  * @author Francisco Dueñas
  * @since 1.0.1
  */
@@ -43,18 +43,26 @@ public class EmailServiceImpl implements EmailService{
     private static final Logger LOG = Logger.getLogger(EmailServiceImpl.class);
 
     /**
-     * Injected SOAP client for the mail service.
-     * 
+     * SOAP client for the mail service.
+     *
      * <p>This client is configured via application.properties and is used to
      * invoke the SOAP service operations defined in the WSDL.</p>
      */
+    private final MailServiceSoap mailServiceSoap;
+
+    /**
+     * Constructor for dependency injection.
+     *
+     * @param mailServiceSoap the SOAP client for mail service
+     */
     @Inject
-    @CXFClient("mailService")
-    MailServiceSoap mailServiceSoap;
+    public EmailServiceImpl(@CXFClient("mailService") MailServiceSoap mailServiceSoap) {
+        this.mailServiceSoap = mailServiceSoap;
+    }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * <p>This implementation:
      * <ol>
      *   <li>Converts {@link EmailRequest} to {@link ResendEmailRequest}</li>
@@ -75,7 +83,7 @@ public class EmailServiceImpl implements EmailService{
                 soapRequest.setRecipient(emailRequest.recipient());
                 soapRequest.setSubject(emailRequest.subject());
                 soapRequest.setMessage(emailRequest.message());
-                
+
                 // Convert attachments if they exist
                 if (emailRequest.emailAttacheds() != null && !emailRequest.emailAttacheds().isEmpty()) {
                     ArrayOfAttachment attachments = new ArrayOfAttachment();
@@ -94,7 +102,7 @@ public class EmailServiceImpl implements EmailService{
 
                 // Convert SOAP response to DataResponse
                 return mapSoapResponseToDataResponse(emailRequest, soapResult);
-                
+
             } catch (Exception e) {
                 LOG.error("Error calling SOAP service", e);
                 // Handle technical errors - timeout, connection failure, 500 from provider
@@ -104,7 +112,7 @@ public class EmailServiceImpl implements EmailService{
                 } else {
                     errorDetail += " (timeout, connection failure, 500 from provider)";
                 }
-                return createErrorResponse(emailRequest, 500, "Internal Server Error", 
+                return createErrorResponse(emailRequest, 500, "Internal Server Error",
                     errorDetail);
             }
         });
@@ -112,11 +120,11 @@ public class EmailServiceImpl implements EmailService{
 
     /**
      * Maps a SOAP service response to the internal DataResponse model.
-     * 
+     *
      * <p>This method handles both successful and business error responses from
      * the SOAP service. It extracts the relevant information and constructs
      * the appropriate {@link DataResponse}.</p>
-     * 
+     *
      * @param emailRequest The original email request for reference
      * @param soapResult The result from the SOAP service
      * @return A DataResponse with appropriate status code and message based on
@@ -136,7 +144,7 @@ public class EmailServiceImpl implements EmailService{
             return new DataResponse(header, body);
         } else {
             // Business error
-            int statusCode = soapResult.getErrorCode() != null ? 
+            int statusCode = soapResult.getErrorCode() != null ?
                 Integer.parseInt(soapResult.getErrorCode()) : 400;
             // Ensure business error codes are 400 or 409
             if (statusCode != 400 && statusCode != 409) {
@@ -155,11 +163,11 @@ public class EmailServiceImpl implements EmailService{
 
     /**
      * Creates an error response for technical failures.
-     * 
+     *
      * <p>This method is used when a technical error occurs (e.g., network issues,
      * SOAP service unavailable, etc.) and creates a standardized error response
      * with the provided error details.</p>
-     * 
+     *
      * @param emailRequest The original email request for reference
      * @param code The HTTP status code (typically 500 for technical errors)
      * @param message The error message for the header
