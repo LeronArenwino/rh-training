@@ -3,6 +3,7 @@ package org.acme.services.impl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import org.acme.utils.TraceContext;
 import org.jboss.logging.Logger;
 
 import static org.acme.utils.constants.Constants.CACHE_REMOTE_NAME;
@@ -42,7 +43,8 @@ public class CacheImpl implements CacheService {
      */
     @Override
     public Uni<ClientCache> getAsyncData(String id) {
-        LOG.info("Consultado datos en RH DataGrid para el ID: " + id);
+        String correlationId = TraceContext.getOrGenerateCorrelationId();
+        LOG.infof("[%s] Consultado datos en RH DataGrid para el ID: %s", correlationId, id);
         return Uni.createFrom().completionStage(cache.getAsync(id));
     }
 
@@ -55,7 +57,8 @@ public class CacheImpl implements CacheService {
      */
     @Override
     public Uni<ClientCache> putAsyncData(String id, ClientCache client) {
-        LOG.info("Creando un Cliente en RH DataGrid con el ID: " + id);
+        String correlationId = TraceContext.getOrGenerateCorrelationId();
+        LOG.infof("[%s] Creando un Cliente en RH DataGrid con el ID: %s", correlationId, id);
 
         return Uni.createFrom()
             .completionStage(cache.putAsync(id, client, 0L, java.util.concurrent.TimeUnit.MILLISECONDS, 0L,

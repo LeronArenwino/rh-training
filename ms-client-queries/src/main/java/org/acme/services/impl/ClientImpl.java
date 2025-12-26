@@ -12,6 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 
+import org.acme.utils.TraceContext;
 import org.jboss.logging.Logger;
 import io.vertx.core.Vertx;
 import io.vertx.core.Context;
@@ -61,7 +62,8 @@ public class ClientImpl implements ClientService {
     */
     @Override
     public Uni<Optional<ClientCache>> getClient(String document) {
-        LOG.infof("Buscando cliente en cache: %s", document);
+        String correlationId = TraceContext.getOrGenerateCorrelationId();
+        LOG.infof("[%s] Buscando cliente en cache: %s", correlationId, document);
 
         Context ctx = safeContext(Vertx.currentContext());
 
@@ -106,7 +108,8 @@ public class ClientImpl implements ClientService {
      * 
      */
     private Uni<Optional<ClientCache>> fetchFromDbAndCache(String document, Context ctx) {
-        LOG.infof("Cache no encontrado para %s, consultando BD", document);
+        String correlationId = TraceContext.getOrGenerateCorrelationId();
+        LOG.infof("[%s] Cache no encontrado para %s, consultando BD", correlationId, document);
 
         return Uni.createFrom().emitter(em ->
             findClientInDb(document)
