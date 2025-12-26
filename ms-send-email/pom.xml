@@ -179,6 +179,10 @@
                 <quarkus.package.jar.enabled>false</quarkus.package.jar.enabled>
                 <skipITs>false</skipITs>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
+                <!-- Use Podman instead of Docker -->
+                <quarkus.native.container-runtime>podman</quarkus.native.container-runtime>
+                <!-- Use Red Hat registry for builder image -->
+                <quarkus.native.builder-image>registry.access.redhat.com/quarkus/mandrel-for-jdk-21-rhel8:23.1</quarkus.native.builder-image>
             </properties>
         </profile>
     </profiles>
