@@ -77,45 +77,73 @@ public class EmailServiceImpl implements EmailService{
     public Uni<DataResponse> sendEmail(EmailRequest emailRequest) {
         return Uni.createFrom().item(() -> {
             try {
-                // Convert EmailRequest to ResendEmailRequest of SOAP
-                ResendEmailRequest soapRequest = new ResendEmailRequest();
-                soapRequest.setEmailId(emailRequest.emailId());
-                soapRequest.setRecipient(emailRequest.recipient());
-                soapRequest.setSubject(emailRequest.subject());
-                soapRequest.setMessage(emailRequest.message());
-
-                // Convert attachments if they exist
-                if (emailRequest.emailAttacheds() != null && !emailRequest.emailAttacheds().isEmpty()) {
-                    ArrayOfAttachment attachments = new ArrayOfAttachment();
-                    emailRequest.emailAttacheds().forEach(attached -> {
-                        Attachment attachment = new Attachment();
-                        attachment.setName(attached.attachedName());
-                        attachment.setContent(attached.attachedPath()); // Adjust according to your logic
-                        attachment.setContentType("application/octet-stream");
-                        attachments.getAttachment().add(attachment);
-                    });
-                    soapRequest.setAttachments(attachments);
-                }
-
-                // Call the SOAP service
+                ResendEmailRequest soapRequest = buildSoapRequest(emailRequest);
                 ResendEmailResult soapResult = mailServiceSoap.resendEmail(soapRequest);
-
-                // Convert SOAP response to DataResponse
                 return mapSoapResponseToDataResponse(emailRequest, soapResult);
-
             } catch (Exception e) {
                 LOG.error("Error calling SOAP service", e);
-                // Handle technical errors - timeout, connection failure, 500 from provider
-                String errorDetail = "Technical error consuming the WSDL";
-                if (e.getMessage() != null) {
-                    errorDetail += ": " + e.getMessage();
-                } else {
-                    errorDetail += " (timeout, connection failure, 500 from provider)";
-                }
-                return createErrorResponse(emailRequest, 500, "Internal Server Error",
-                    errorDetail);
+                return handleTechnicalError(emailRequest, e);
             }
         });
+    }
+
+    /**
+     * Builds a SOAP request from an EmailRequest.
+     *
+     * @param emailRequest The email request to convert
+     * @return A ResendEmailRequest ready to be sent to the SOAP service
+     */
+    private ResendEmailRequest buildSoapRequest(EmailRequest emailRequest) {
+        ResendEmailRequest soapRequest = new ResendEmailRequest();
+        soapRequest.setEmailId(emailRequest.emailId());
+        soapRequest.setRecipient(emailRequest.recipient());
+        soapRequest.setSubject(emailRequest.subject());
+        soapRequest.setMessage(emailRequest.message());
+
+        if (hasAttachments(emailRequest)) {
+            soapRequest.setAttachments(convertAttachments(emailRequest));
+        }
+
+        return soapRequest;
+    }
+
+    /**
+     * Checks if the email request has attachments.
+     *
+     * @param emailRequest The email request to check
+     * @return true if attachments exist, false otherwise
+     */
+    private boolean hasAttachments(EmailRequest emailRequest) {
+        return emailRequest.emailAttacheds() != null && !emailRequest.emailAttacheds().isEmpty();
+    }
+
+    /**
+     * Converts email attachments to SOAP attachments.
+     *
+     * @param emailRequest The email request containing attachments
+     * @return An ArrayOfAttachment with converted attachments
+     */
+    private ArrayOfAttachment convertAttachments(EmailRequest emailRequest) {
+        ArrayOfAttachment attachments = new ArrayOfAttachment();
+        emailRequest.emailAttacheds().forEach(attached -> {
+            Attachment attachment = createSoapAttachment(attached);
+            attachments.getAttachment().add(attachment);
+        });
+        return attachments;
+    }
+
+    /**
+     * Creates a SOAP attachment from an EmailAttached.
+     *
+     * @param attached The email attachment to convert
+     * @return A SOAP Attachment object
+     */
+    private Attachment createSoapAttachment(co.com.training.model.request.EmailAttached attached) {
+        Attachment attachment = new Attachment();
+        attachment.setName(attached.attachedName());
+        attachment.setContent(attached.attachedPath());
+        attachment.setContentType("application/octet-stream");
+        return attachment;
     }
 
     /**
@@ -133,32 +161,99 @@ public class EmailServiceImpl implements EmailService{
      */
     private DataResponse mapSoapResponseToDataResponse(EmailRequest emailRequest, ResendEmailResult soapResult) {
         if (soapResult.isSuccess()) {
-            // Successful response
-            Header header = new Header(200, "Sent");
-            Body body = new Body(
-                emailRequest.emailId(),
-                emailRequest.recipient(),
-                "REENVIADO",
-                soapResult.getMessage() != null ? soapResult.getMessage() : "Email resent successfully to the SOAP service"
-            );
-            return new DataResponse(header, body);
+            return createSuccessResponse(emailRequest, soapResult);
         } else {
-            // Business error
-            int statusCode = soapResult.getErrorCode() != null ?
-                Integer.parseInt(soapResult.getErrorCode()) : 400;
-            // Ensure business error codes are 400 or 409
-            if (statusCode != 400 && statusCode != 409) {
-                statusCode = 400; // Default to 400 for business errors
-            }
-            Header header = new Header(statusCode, "Error");
-            Body body = new Body(
-                emailRequest.emailId(),
-                emailRequest.recipient(),
-                "ERROR",
-                soapResult.getMessage() != null ? soapResult.getMessage() : "Business error received from the SOAP service"
-            );
-            return new DataResponse(header, body);
+            return createBusinessErrorResponse(emailRequest, soapResult);
         }
+    }
+
+    /**
+     * Creates a success response from a successful SOAP result.
+     *
+     * @param emailRequest The original email request
+     * @param soapResult The successful SOAP result
+     * @return A DataResponse with status 200
+     */
+    private DataResponse createSuccessResponse(EmailRequest emailRequest, ResendEmailResult soapResult) {
+        Header header = new Header(200, "Sent");
+        String message = soapResult.getMessage() != null 
+            ? soapResult.getMessage() 
+            : "Email resent successfully to the SOAP service";
+        Body body = new Body(
+            emailRequest.emailId(),
+            emailRequest.recipient(),
+            "REENVIADO",
+            message
+        );
+        return new DataResponse(header, body);
+    }
+
+    /**
+     * Creates a business error response from a failed SOAP result.
+     *
+     * @param emailRequest The original email request
+     * @param soapResult The failed SOAP result
+     * @return A DataResponse with appropriate business error code (400 or 409)
+     */
+    private DataResponse createBusinessErrorResponse(EmailRequest emailRequest, ResendEmailResult soapResult) {
+        int statusCode = extractBusinessErrorCode(soapResult);
+        Header header = new Header(statusCode, "Error");
+        String message = soapResult.getMessage() != null 
+            ? soapResult.getMessage() 
+            : "Business error received from the SOAP service";
+        Body body = new Body(
+            emailRequest.emailId(),
+            emailRequest.recipient(),
+            "ERROR",
+            message
+        );
+        return new DataResponse(header, body);
+    }
+
+    /**
+     * Extracts and validates the business error code from a SOAP result.
+     * Ensures the code is either 400 or 409, defaulting to 400 if invalid.
+     *
+     * @param soapResult The SOAP result containing the error code
+     * @return A valid business error code (400 or 409)
+     */
+    private int extractBusinessErrorCode(ResendEmailResult soapResult) {
+        int statusCode = soapResult.getErrorCode() != null 
+            ? Integer.parseInt(soapResult.getErrorCode()) 
+            : 400;
+        
+        if (statusCode != 400 && statusCode != 409) {
+            statusCode = 400;
+        }
+        return statusCode;
+    }
+
+    /**
+     * Handles technical errors that occur during SOAP service invocation.
+     *
+     * @param emailRequest The original email request
+     * @param exception The exception that occurred
+     * @return A DataResponse with status 500 and technical error details
+     */
+    private DataResponse handleTechnicalError(EmailRequest emailRequest, Exception exception) {
+        String errorDetail = buildTechnicalErrorMessage(exception);
+        return createErrorResponse(emailRequest, 500, "Internal Server Error", errorDetail);
+    }
+
+    /**
+     * Builds a technical error message from an exception.
+     *
+     * @param exception The exception that occurred
+     * @return A formatted error message
+     */
+    private String buildTechnicalErrorMessage(Exception exception) {
+        String errorDetail = "Technical error consuming the WSDL";
+        if (exception.getMessage() != null) {
+            errorDetail += ": " + exception.getMessage();
+        } else {
+            errorDetail += " (timeout, connection failure, 500 from provider)";
+        }
+        return errorDetail;
     }
 
     /**
