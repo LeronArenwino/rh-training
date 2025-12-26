@@ -45,6 +45,10 @@ public class ClientImpl implements ClientService {
         this.cacheService = cacheService;
     }
 
+    private Context safeContext(Context ctx) {
+        return ctx != null ? ctx : Vertx.vertx().getOrCreateContext();
+    }
+
     /*
      * Primero intenta obtener el cliente desde la caché. Si no está presente,
      * consulta la base de datos y almacena el resultado en la caché.
@@ -59,7 +63,7 @@ public class ClientImpl implements ClientService {
     public Uni<Optional<ClientCache>> getClient(String document) {
         LOG.infof("Buscando cliente en cache: %s", document);
 
-        Context ctx = Vertx.currentContext();
+        Context ctx = safeContext(Vertx.currentContext());
 
         return getFromCache(document, ctx)
                 .map(Optional::ofNullable)
@@ -71,7 +75,7 @@ public class ClientImpl implements ClientService {
     }
 
     /**
-     * Se usa el emitter para asegurar que en todo momento la operación pase por el 
+     * Se usa el emitter para asegurar quesiempre la operación pase por el 
      * event-loop original, evitando perder el contexto.
      * 
      * @return Uni<ClientCache> El cliente obtenido desde la caché.
@@ -80,13 +84,16 @@ public class ClientImpl implements ClientService {
      * 
      */
     private Uni<ClientCache> getFromCache(String document, Context ctx) {
-        return Uni.createFrom().emitter(em -> {
+
+        Context context = safeContext(ctx);
+        
+        return Uni.createFrom().emitter(em ->
             cacheService.getAsyncData(document)
                 .subscribe().with(
-                    item -> ctx.runOnContext(v -> em.complete(item)),
-                    err -> ctx.runOnContext(v -> em.fail(err))
-                );
-        });
+                    item -> context.runOnContext(v -> em.complete(item)),
+                    err -> context.runOnContext(v -> em.fail(err))
+                )
+        );
     }
 
     /*
@@ -101,7 +108,7 @@ public class ClientImpl implements ClientService {
     private Uni<Optional<ClientCache>> fetchFromDbAndCache(String document, Context ctx) {
         LOG.infof("Cache no encontrado para %s, consultando BD", document);
 
-        return Uni.createFrom().emitter(em -> {
+        return Uni.createFrom().emitter(em ->
             findClientInDb(document)
                 .subscribe().with(
                     client -> ctx.runOnContext(v -> {
@@ -118,8 +125,8 @@ public class ClientImpl implements ClientService {
                         }
                     }),
                     err -> ctx.runOnContext(v -> em.fail(err))
-                );
-        });
+                )
+        );
     }
 
     /*

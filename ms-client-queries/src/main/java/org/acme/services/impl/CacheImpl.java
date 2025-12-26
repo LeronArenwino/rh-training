@@ -5,6 +5,8 @@ import jakarta.inject.Inject;
 
 import org.jboss.logging.Logger;
 
+import static org.acme.utils.constants.Constants.CACHE_REMOTE_NAME;
+
 import org.acme.model.ClientCache;
 import org.acme.services.CacheService;
 import org.infinispan.client.hotrod.RemoteCache;
@@ -12,7 +14,6 @@ import org.infinispan.client.hotrod.RemoteCache;
 import io.smallrye.mutiny.Uni;
 import io.quarkus.infinispan.client.Remote;
 
-import static org.acme.utils.constants.Constants.CACHE_REMOTE_NAME;
 
 /**
  * Clase que implementa la lógica del servicio de caché utilizando Infinispan.
@@ -55,8 +56,10 @@ public class CacheImpl implements CacheService {
     @Override
     public Uni<ClientCache> putAsyncData(String id, ClientCache client) {
         LOG.info("Creando un Cliente en RH DataGrid con el ID: " + id);
-        return Uni.createFrom().completionStage(
-                cache.putAsync(id, client, 0L, java.util.concurrent.TimeUnit.MILLISECONDS, 0L,
-                        java.util.concurrent.TimeUnit.MILLISECONDS));
+
+        return Uni.createFrom()
+            .completionStage(cache.putAsync(id, client, 0L, java.util.concurrent.TimeUnit.MILLISECONDS, 0L,
+                        java.util.concurrent.TimeUnit.MILLISECONDS))
+            .replaceWith(client);
     }
 }
