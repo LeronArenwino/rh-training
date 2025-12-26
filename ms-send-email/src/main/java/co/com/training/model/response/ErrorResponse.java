@@ -22,6 +22,16 @@ import jakarta.ws.rs.core.Response;
 public class ErrorResponse {
 
     /**
+     * Private constructor to prevent instantiation.
+     * 
+     * <p>This class is a utility class and should not be instantiated.
+     * All methods are static and should be called directly on the class.</p>
+     */
+    private ErrorResponse() {
+        // Utility class - prevent instantiation
+    }
+
+    /**
      * Creates a standardized validation error response.
      * 
      * <p>This method creates a BAD_REQUEST (400) response with a standardized
