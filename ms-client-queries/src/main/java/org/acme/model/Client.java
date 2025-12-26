@@ -1,35 +1,19 @@
 package org.acme.model;
 
-import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import io.smallrye.mutiny.Uni;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
 /**
  * Clase que representa la entidad Client para realizar la consulta a la BD.
+ * Extiende BaseClientFields para reutilizar campos y métodos comunes.
  * 
  * @author Felipe Malaver
  * @since 2025-12-09
  * @version 1.0
  */
-
 @Entity
-public class Client extends PanacheEntity {
-    
-    @Column(unique = true)
-    public String document;
-
-    @Column(name = "document_type")
-    public String documentType;
-
-    public String name;
-    public String phone;
-    @Column(unique = true)
-    public String email;
-    public String address;
-
-    @Column(name = "credit_card")
-    public String creditCard;
+public class Client extends BaseClientFields {
+    // Todos los campos y métodos se heredan de BaseClientFields, eliminando duplicación
 
     public static Uni<Client> findByDocument(String document) {
         return find("document", document).firstResult();
@@ -39,12 +23,8 @@ public class Client extends PanacheEntity {
     }
 
     public Client(String document, String documentType, String name, String phone, String email, String address, String creditCard) {
-        this.document = document;
-        this.documentType = documentType;
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.address = address;
-        this.creditCard = creditCard;
+        super(document, documentType, name, phone, email, address, creditCard);
     }
+    
+    // Los getters y setters se heredan de BaseClientFields, eliminando duplicación
 }

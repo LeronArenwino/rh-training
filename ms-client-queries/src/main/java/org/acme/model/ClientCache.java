@@ -3,31 +3,20 @@ package org.acme.model;
 import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoField;
 
-
-public class ClientCache {
+/**
+ * Clase que representa los datos del cliente para almacenamiento en caché.
+ * Extiende BaseClientFields para reutilizar campos y métodos comunes.
+ * Los campos están en la clase base y los getters se sobrescriben con @ProtoField
+ * para la serialización de Infinispan.
+ * 
+ * @author Felipe Malaver
+ * @since 2025-12-09
+ * @version 1.0
+ */
+public class ClientCache extends BaseClientFields {
     
-    @ProtoField(number = 1)
-    public String document;
-
-    @ProtoField(number = 2)
-    public String documentType;
-    
-    @ProtoField(number = 3)
-    public String name;
-    
-    @ProtoField(number = 4)
-    public String phone;
-
-    @ProtoField(number = 5)
-    public String email;
-    
-    @ProtoField(number = 6)
-    public String address;
-    
-    @ProtoField(number = 7)
-    public String creditCard;
-
     public ClientCache() {
+        super();
     }
 
     /*
@@ -45,70 +34,50 @@ public class ClientCache {
      */
     @ProtoFactory
     public ClientCache(String document, String documentType, String name, String phone, String email, String address, String creditCard) {
-        this.document = document;
-        this.documentType = documentType;
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.address = address;
-        this.creditCard = creditCard;
+        super(document, documentType, name, phone, email, address, creditCard);
     }
 
+    // Getters sobrescritos con @ProtoField para serialización Protobuf
+    // Los campos se heredan de BaseClientFields
+    @ProtoField(number = 1)
+    @Override
     public String getDocument() {
-        return document;
+        return super.getDocument();
     }
 
-    public void setDocument(String document) {
-        this.document = document;
-    }
-
+    @ProtoField(number = 2)
+    @Override
     public String getDocumentType() {
-        return documentType;
+        return super.getDocumentType();
     }
-
-    public void setDocumentType(String documentType) {
-        this.documentType = documentType;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCreditCard() {
-        return creditCard;
-    }
-
-    public void setCreditCard(String creditCard) {
-        this.creditCard = creditCard;
-    }
-
     
+    @ProtoField(number = 3)
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+    
+    @ProtoField(number = 4)
+    @Override
+    public String getPhone() {
+        return super.getPhone();
+    }
+
+    @ProtoField(number = 5)
+    @Override
+    public String getEmail() {
+        return super.getEmail();
+    }
+    
+    @ProtoField(number = 6)
+    @Override
+    public String getAddress() {
+        return super.getAddress();
+    }
+    
+    @ProtoField(number = 7)
+    @Override
+    public String getCreditCard() {
+        return super.getCreditCard();
+    }
 }

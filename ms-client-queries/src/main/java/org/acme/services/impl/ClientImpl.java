@@ -137,13 +137,13 @@ public class ClientImpl implements ClientService {
      */
     private ClientCache toCache(Client client) {
         return new ClientCache(
-                client.document,
-                client.documentType,
-                client.name,
-                client.phone,
-                client.email,
-                client.address,
-                client.creditCard
+                client.getDocument(),
+                client.getDocumentType(),
+                client.getName(),
+                client.getPhone(),
+                client.getEmail(),
+                client.getAddress(),
+                client.getCreditCard()
         );
     }
 
