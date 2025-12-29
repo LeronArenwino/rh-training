@@ -64,11 +64,6 @@ class ClientImplTest {
 
         try (MockedStatic<Vertx> vertxMock = mockStatic(Vertx.class)) {
             vertxMock.when(Vertx::currentContext).thenReturn(context);
-            doAnswer(invocation -> {
-                Handler<Void> handler = invocation.getArgument(0);
-                handler.handle(null);
-                return null;
-            }).when(context).runOnContext(any());
             
             CompletableFuture<ClientCache> future = CompletableFuture.completedFuture(cachedClient);
             when(cacheService.getAsyncData(document)).thenReturn(Uni.createFrom().completionStage(future));
@@ -103,11 +98,6 @@ class ClientImplTest {
              MockedStatic<Client> clientMock = mockStatic(Client.class)) {
             
             vertxMock.when(Vertx::currentContext).thenReturn(context);
-            doAnswer(invocation -> {
-                Handler<Void> handler = invocation.getArgument(0);
-                handler.handle(null);
-                return null;
-            }).when(context).runOnContext(any());
 
             // Mock cache returns null
             CompletableFuture<ClientCache> nullFuture = CompletableFuture.completedFuture(null);
@@ -148,11 +138,6 @@ class ClientImplTest {
              MockedStatic<Client> clientMock = mockStatic(Client.class)) {
             
             vertxMock.when(Vertx::currentContext).thenReturn(context);
-            doAnswer(invocation -> {
-                Handler<Void> handler = invocation.getArgument(0);
-                handler.handle(null);
-                return null;
-            }).when(context).runOnContext(any());
 
             // Mock cache returns null
             CompletableFuture<ClientCache> nullFuture = CompletableFuture.completedFuture(null);
@@ -183,11 +168,6 @@ class ClientImplTest {
 
         try (MockedStatic<Vertx> vertxMock = mockStatic(Vertx.class)) {
             vertxMock.when(Vertx::currentContext).thenReturn(context);
-            doAnswer(invocation -> {
-                Handler<Void> handler = invocation.getArgument(0);
-                handler.handle(null);
-                return null;
-            }).when(context).runOnContext(any());
 
             when(cacheService.getAsyncData(document))
                     .thenReturn(Uni.createFrom().failure(exception));
@@ -215,11 +195,6 @@ class ClientImplTest {
              MockedStatic<Client> clientMock = mockStatic(Client.class)) {
             
             vertxMock.when(Vertx::currentContext).thenReturn(context);
-            doAnswer(invocation -> {
-                Handler<Void> handler = invocation.getArgument(0);
-                handler.handle(null);
-                return null;
-            }).when(context).runOnContext(any());
 
             // Mock cache returns null
             CompletableFuture<ClientCache> nullFuture = CompletableFuture.completedFuture(null);
@@ -253,11 +228,6 @@ class ClientImplTest {
              MockedStatic<Client> clientMock = mockStatic(Client.class)) {
             
             vertxMock.when(Vertx::currentContext).thenReturn(context);
-            doAnswer(invocation -> {
-                Handler<Void> handler = invocation.getArgument(0);
-                handler.handle(null);
-                return null;
-            }).when(context).runOnContext(any());
 
             // Mock cache returns null
             CompletableFuture<ClientCache> nullFuture = CompletableFuture.completedFuture(null);
@@ -311,11 +281,6 @@ class ClientImplTest {
             vertxMock.when(Vertx::currentContext).thenReturn(null);
             vertxMock.when(Vertx::vertx).thenReturn(mockVertx);
             when(mockVertx.getOrCreateContext()).thenReturn(newContext);
-            doAnswer(invocation -> {
-                Handler<Void> handler = invocation.getArgument(0);
-                handler.handle(null);
-                return null;
-            }).when(newContext).runOnContext(any());
 
             CompletableFuture<ClientCache> future = CompletableFuture.completedFuture(cachedClient);
             when(cacheService.getAsyncData(document)).thenReturn(Uni.createFrom().completionStage(future));
@@ -345,11 +310,6 @@ class ClientImplTest {
              MockedStatic<Client> clientMock = mockStatic(Client.class)) {
             
             vertxMock.when(Vertx::currentContext).thenReturn(context);
-            doAnswer(invocation -> {
-                Handler<Void> handler = invocation.getArgument(0);
-                handler.handle(null);
-                return null;
-            }).when(context).runOnContext(any());
 
             // Mock cache returns null
             CompletableFuture<ClientCache> nullFuture = CompletableFuture.completedFuture(null);
