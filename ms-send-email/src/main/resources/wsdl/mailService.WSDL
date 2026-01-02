@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://training.com/services/"
+	xmlns:tns="http://training.com/services/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+	xmlns:s="http://www.w3.org/2001/XMLSchema"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+	<wsdl:documentation>Email - Services for sending emails.</wsdl:documentation>
+	<wsdl:types>
+		<s:schema elementFormDefault="qualified"
+			targetNamespace="http://training.com/services/">
+			
+			<!-- Request to resend email -->
+			<s:element name="ResendEmail">
+				<s:complexType>
+					<s:sequence>
+						<s:element minOccurs="1" maxOccurs="1" name="request" type="tns:ResendEmailRequest" />
+					</s:sequence>
+				</s:complexType>
+			</s:element>
+			
+			<s:complexType name="ResendEmailRequest">
+				<s:sequence>
+					<s:element minOccurs="1" maxOccurs="1" name="emailId" type="s:string" />
+					<s:element minOccurs="1" maxOccurs="1" name="recipient" type="s:string" />
+					<s:element minOccurs="1" maxOccurs="1" name="subject" type="s:string" />
+					<s:element minOccurs="1" maxOccurs="1" name="message" type="s:string" />
+					<s:element minOccurs="0" maxOccurs="1" name="attachments" type="tns:ArrayOfAttachment" />
+				</s:sequence>
+			</s:complexType>
+			
+			<!-- Array of attachments -->
+			<s:complexType name="ArrayOfAttachment">
+				<s:sequence>
+					<s:element minOccurs="0" maxOccurs="unbounded" name="attachment" type="tns:Attachment" />
+				</s:sequence>
+			</s:complexType>
+			
+			<s:complexType name="Attachment">
+				<s:sequence>
+					<s:element minOccurs="0" maxOccurs="1" name="name" type="s:string" />
+					<s:element minOccurs="0" maxOccurs="1" name="content" type="s:string" />
+					<s:element minOccurs="0" maxOccurs="1" name="contentType" type="s:string" />
+				</s:sequence>
+			</s:complexType>
+			
+			<!-- Response for resend email -->
+			<s:element name="ResendEmailResponse">
+				<s:complexType>
+					<s:sequence>
+						<s:element minOccurs="0" maxOccurs="1" name="ResendEmailResult" type="tns:ResendEmailResult" />
+					</s:sequence>
+				</s:complexType>
+			</s:element>
+			
+			<s:complexType name="ResendEmailResult">
+				<s:sequence>
+					<s:element minOccurs="1" maxOccurs="1" name="success" type="s:boolean" />
+					<s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
+					<s:element minOccurs="0" maxOccurs="1" name="errorCode" type="s:string" />
+					<s:element minOccurs="0" maxOccurs="1" name="technicalFailure" type="s:string" />
+				</s:sequence>
+			</s:complexType>
+			
+		</s:schema>
+	</wsdl:types>
+	
+	<wsdl:message name="ResendEmailSoapIn">
+		<wsdl:part name="parameters" element="tns:ResendEmail" />
+	</wsdl:message>
+	
+	<wsdl:message name="ResendEmailSoapOut">
+		<wsdl:part name="parameters" element="tns:ResendEmailResponse" />
+	</wsdl:message>
+	
+	<wsdl:portType name="MailServiceSoap">
+		<wsdl:operation name="ResendEmail">
+			<wsdl:documentation>Resends an email to the specified recipient</wsdl:documentation>
+			<wsdl:input message="tns:ResendEmailSoapIn" />
+			<wsdl:output message="tns:ResendEmailSoapOut" />
+		</wsdl:operation>
+	</wsdl:portType>
+	
+	<wsdl:binding name="MailServiceSoap" type="tns:MailServiceSoap">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="ResendEmail">
+			<soap:operation soapAction="http://training.com/services/ResendEmail"
+				style="document" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	
+	<wsdl:service name="MailService">
+		<wsdl:documentation>Email - Services for sending emails.</wsdl:documentation>
+		<wsdl:port name="MailServiceSoap" binding="tns:MailServiceSoap">
+			<soap:address location="http://10.16.20.136:9012/MailService.asmx" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

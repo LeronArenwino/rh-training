@@ -1,0 +1,27 @@
+{
+    "priority": 2,
+    "request": {
+      "method": "POST",
+      "url": "/MailService.asmx",
+      "headers": {
+        "SOAPAction": {
+          "matches": ".*ResendEmail.*"
+        },
+        "Content-Type": {
+          "contains": "text/xml"
+        }
+      },
+      "bodyPatterns": [
+        {
+          "matches": ".*<emailId>999999999</emailId>.*"
+        }
+      ]
+    },
+    "response": {
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml; charset=utf-8"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body><ResendEmailResponse xmlns=\"http://training.com/services/\"><ResendEmailResult><success>false</success><message>Email not found</message><errorCode>404</errorCode></ResendEmailResult></ResendEmailResponse></soap:Body></soap:Envelope>"
+    }
+  }
